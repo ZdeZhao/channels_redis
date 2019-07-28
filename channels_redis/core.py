@@ -14,6 +14,7 @@ import msgpack
 
 from channels.exceptions import ChannelFull
 from channels.layers import BaseChannelLayer
+import logging
 
 
 def _wrap_close(loop, pool):
@@ -222,6 +223,8 @@ class RedisChannelLayer(BaseChannelLayer):
         # Per-channel cleanup locks to prevent a receive starting and moving
         # a message back into the main queue before its cleanup has completed
         self.receive_clean_locks = ChannelLock()
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        self.my_logging = logging.getLogger("zdz")
 
     def decode_hosts(self, hosts):
         """
@@ -649,7 +652,11 @@ class RedisChannelLayer(BaseChannelLayer):
                 channel_keys_to_capacity[channel_key]
                 for channel_key in channel_redis_keys
             ]
-
+            self.my_logging.info("group_send_lua:" + group_send_lua)
+            for item in channel_redis_keys:
+                self.my_logging.info("keys: " + item)
+            for item in args:
+                self.my_logging.info("args: " + item)
             # channel_keys does not contain a single redis key more than once
             async with self.connection(connection_index) as connection:
                 await connection.eval(
