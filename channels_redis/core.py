@@ -656,7 +656,7 @@ class RedisChannelLayer(BaseChannelLayer):
             for item in channel_redis_keys:
                 self.my_logging.info("keys: " + item)
             for item in args:
-                self.my_logging.info("args: " + item)
+                self.my_logging.info("args: " + str(item))
             # channel_keys does not contain a single redis key more than once
             async with self.connection(connection_index) as connection:
                 await connection.eval(
